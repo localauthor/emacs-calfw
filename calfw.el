@@ -2360,16 +2360,24 @@ mainly used at functions for putting overlays."
   "[internal] Find the schedule item which has the text properties as
 `calfw-date' = DATE and `calfw-row-count' = ROW-COUNT. If no item is found,
 this function returns nil."
-  (cl-loop with pos = (calfw-dest-point-min dest)
-           with end = (calfw-dest-point-max dest)
-           for next = (next-single-property-change pos 'calfw-date nil end)
-           for text-date = (and next (calfw-cursor-to-date next))
-           for text-row-count = (and next (get-text-property next 'calfw-row-count))
-           while (and next (< next end)) do
-           (when (and text-date (equal date text-date)
-                      (eql row-count text-row-count))
-             (cl-return next))
-           (setq pos next)))
+  (loop with pos = (calfw-dest-point-min dest)
+        with end = (calfw-dest-point-max dest)
+        with last-found = nil
+        for next = (next-single-property-change pos 'calfw-date nil end)
+        for text-date = (and next (calfw-cursor-to-date next))
+        for text-row-count = (and next (get-text-property next 'calfw-row-count))
+        while (and next (< next end)) do
+        (when (and text-date (equal date text-date)
+                   (eql row-count text-row-count))
+          ;; this is needed item
+          (return next))
+        (when (and text-date (equal date text-date)
+                   text-row-count)
+          ;; keep it to search bottom item
+          (setq last-found next))
+        (setq pos next)
+        finally (if (and last-found (< row-count 0))
+                    (return last-found))))
 
 (defun calfw-navi-goto-date (date)
   "Move the cursor to DATE and put selection. If DATE is not
