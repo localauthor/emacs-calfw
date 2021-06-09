@@ -2479,6 +2479,28 @@ calendar view."
 
 ;;; Actions
 
+(defun calfw-cycle-view ()
+  "Cycle the view."
+  (interactive)
+  (let* ((cp (calfw-cp-get-component))
+         (view (symbol-name (calfw-cp-get-view cp))))
+    (cond ((equal view "day") (calfw-change-view-week))
+          ((equal view "week") (calfw-change-view-two-weeks))
+          ((equal view "two-weeks") (calfw-change-view-month))
+          ((equal view "month") (calfw-change-view-day))
+          )))
+
+(defun calfw-cycle-view-reverse ()
+  "Cycle the view in reverse."
+  (interactive)
+  (let* ((cp (calfw-cp-get-component))
+         (view (symbol-name (calfw-cp-get-view cp))))
+    (cond ((equal view "day") (calfw-change-view-month))
+          ((equal view "week") (calfw-change-view-day))
+          ((equal view "two-weeks") (calfw-change-view-week))
+          ((equal view "month") (calfw-change-view-two-weeks))
+          )))
+
 (defun calfw-change-view-month ()
   "change-view-month"
   (interactive)
