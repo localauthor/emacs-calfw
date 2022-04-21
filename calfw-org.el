@@ -230,14 +230,18 @@ If TEXT does not have a range, return nil."
            (end-date (nth 1 (nth 1 matches)))
 	       (extra (calfw-org-tp text 'extra)))
 	   (if (string-match "(\\([0-9]+\\)/\\([0-9]+\\)): " extra)
-       ( list( calendar-gregorian-from-absolute
-       (time-to-days
-       (org-read-date nil t start-date))
-       )
-       (calendar-gregorian-from-absolute
-       (time-to-days
-       (org-read-date nil t end-date))) text)
-	   )))))
+	       (let* ((cur-day (string-to-number
+				(match-string 1 extra)))
+		      (total-days (string-to-number
+				   (match-string 2 extra)))
+		      (start-date (org-read-date nil t date-string))
+		      (end-date (time-add
+				 start-date
+				 (seconds-to-time (* 3600 24 (- total-days 1))))))
+		       (unless (= cur-day total-days)
+             (list (calendar-gregorian-from-absolute (time-to-days start-date))
+		                  (calendar-gregorian-from-absolute (time-to-days end-date)) text)))
+	     )))))
 
 (defun calfw-org-schedule-period-to-calendar (begin end)
   "[internal] Return calfw calendar items between BEGIN and END
