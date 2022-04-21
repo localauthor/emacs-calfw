@@ -225,9 +225,7 @@ If this function splits into a list of string, the calfw displays those string i
 If TEXT does not have a range, return nil."
   (let* ((dotime (calfw-org-tp text 'dotime)))
     (and (stringp dotime) (string-match org-ts-regexp dotime)
-	 (let* ((matches  (s-match-strings-all org-ts-regexp dotime))
-           (start-date (nth 1 (car matches)))
-           (end-date (nth 1 (nth 1 matches)))
+	 (let ((date-string  (match-string 1 dotime))
 	       (extra (calfw-org-tp text 'extra)))
 	   (if (string-match "(\\([0-9]+\\)/\\([0-9]+\\)): " extra)
 	       (let* ((cur-day (string-to-number
